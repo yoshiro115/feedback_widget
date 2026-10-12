@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Retours &amp; suggestions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* ==========================
+     RESET / BASE
+     ========================== */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+  }
+  body {
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  /* ==========================
+     ACCESSIBILITE - MOUVEMENT REDUIT
+     ========================== */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ==========================
+     LAYOUT GENERAL
+     ========================== */
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* ==========================
+     HEADER + STABILO
+     ========================== */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-logo {
+    flex: none;
+    display: block;
+    height: 34px;
+    width: auto;
+  }
+  .header h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.3;
+    position: relative;
+    display: inline-block;
+    z-index: 0;
+  }
+  .header h1::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    bottom: 3px;
+    height: 38%;
+    background: #fcfc0b;
+    z-index: -1;
+    transform: rotate(-0.6deg);
+  }
+  .header p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333333;
+  }
+  .count-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .count-pill::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f77245;
+    border: 1.5px solid #090c0b;
+  }
+
+  /* ==========================
+     BANNIERE D'INFO (config manquante cote Grist)
+     ========================== */
+  .setup-note {
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: #fdfbce;
+    border: 1.5px solid #090c0b;
+    border-radius: 12px;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .setup-note strong { font-weight: 800; }
+
+  /* ==========================
+     FORMULAIRE (repliable via <details>/<summary> natif : accessible au
+     clavier et au lecteur d'ecran sans JS supplementaire pour le pli/depli)
+     ========================== */
+  .form-details {
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 16px;
+  }
+  .form-details[open] {
+    padding-bottom: 24px;
+  }
+  .form-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    list-style: none;
+  }
+  .form-summary::-webkit-details-marker {
+    display: none;
+  }
+  .form-summary:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: -3px;
+    border-radius: 16px;
+  }
+  .form-summary-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-summary-chevron {
+    display: inline-flex;
+    transition: transform 0.15s ease;
+  }
+  .form-details[open] .form-summary-chevron {
+    transform: rotate(180deg);
+  }
+
+  .form-body {
+    padding: 0 24px;
+  }
+
+  .field {
+    margin-bottom: 24px;
+  }
+  .field:last-of-type {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .field-hint {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #59736e;
+    line-height: 1.5;
+  }
+  .required-hint {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    color: #59736e;
+  }
+
+  /* Groupe de boutons "type de retour" - accessibles au clavier et au lecteur
+     d'ecran via un fieldset/legend + radios natifs, juste stylises en pilules. */
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  legend {
+    padding: 0;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .type-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .type-option {
+    position: relative;
+  }
+  .type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .type-option label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 16px;
+    background: #f2f2f2;
+    border: 1.5px solid #090c0b;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+  }
+  .type-option label::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid #090c0b;
+    background: #ffffff;
+  }
+  .type-option input[type="radio"]:checked + label {
+    background: #45f8cf;
+  }
+  .type-option input[type="radio"]:checked + label::before {
+    background: #090c0b;
+  }
+  .type-option input[type="radio"]:focus-visible + label {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .type-option label:hover {
+    transform: translateY(-1px);
+  }
+
+  input[type="text"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 8px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  input[type="text"]:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+
+  /* ==========================
+     CTA
+     ========================== */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .submit-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .submit-btn {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 24px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 14px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .submit-shadow {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: #f77245;
+    border: 1.5px solid #090c0b;
+    border-radius: 14px;
+    transform: translateY(5px);
+  }
+  .submit-wrap:hover .submit-btn,
+  .submit-wrap:focus-within .submit-btn {
+    transform: translateY(3px);
+  }
+  .submit-wrap:hover .submit-shadow,
+  .submit-wrap:focus-within .submit-shadow {
+    transform: translateY(2px);
+  }
+  .submit-btn:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 4px;
+  }
+  .submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .status {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .status[data-state="ok"] { color: #068428; }
+  .status[data-state="error"] { color: #b3261e; }
+
+  /* ==========================
+     FILTRES
+     ========================== */
+  .filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 16px;
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 160px;
+  }
+  .filter-group label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #59736e;
+  }
+  .filter-group select,
+  .filter-group input[type="search"] {
+    padding: 8px 12px;
+    background: #f2f2f2;
+    border: 1.5px solid #090c0b;
+    border-radius: 8px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 13px;
+  }
+  .filter-group select:focus-visible,
+  .filter-group input:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .filter-search {
+    flex: 1;
+    min-width: 200px;
+  }
+  .reset-btn {
+    align-self: flex-end;
+    padding: 8px 16px;
+    background: #f2f2f2;
+    border: 1.5px solid #090c0b;
+    border-radius: 8px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .reset-btn:hover { background: #e3e3e3; }
+  .reset-btn:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+
+  /* ==========================
+     GROUPES PAR STATUT (Nouveau / Vu / Traite)
+     ========================== */
+  .status-group {
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+  }
+  .status-group:last-child { margin-bottom: 0; }
+
+  .status-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    list-style: none;
+  }
+  .status-summary::-webkit-details-marker { display: none; }
+  .status-summary:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: -3px;
+  }
+  .status-group[open] .status-summary {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .status-summary-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.5px solid #090c0b;
+    flex-shrink: 0;
+  }
+  .status-dot[data-statut="Nouveau"] { background: #fcfc0b; }
+  .status-dot[data-statut="Vu"] { background: #f2f2f2; }
+  .status-dot[data-statut="Traité"] { background: #45f8cf; }
+
+  .status-summary-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .status-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #f2f2f2;
+    border: 1.5px solid #090c0b;
+    font-size: 11.5px;
+    font-weight: 800;
+  }
+  .status-chevron {
+    display: inline-flex;
+    transition: transform 0.15s ease;
+    font-size: 13px;
+  }
+  .status-group[open] .status-chevron { transform: rotate(180deg); }
+
+  .status-body {
+    padding: 16px;
+    background: #f7f7f7;
+    border: 1.5px solid #090c0b;
+    border-top: none;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+
+  /* ==========================
+     LISTE / CARTES
+     ========================== */
+  .empty-state {
+    padding: 24px;
+    text-align: center;
+    background: #ffffff;
+    border: 1.5px dashed #59736e;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #59736e;
+  }
+
+  .item {
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 14px;
+  }
+  .item:last-child { margin-bottom: 0; }
+
+  .item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .item-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border: 1.5px solid #090c0b;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tag::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #090c0b;
+  }
+  .tag[data-type="Bug"] { background: #ffe1da; }
+  .tag[data-type="Bug"]::before { background: #f77245; }
+  .tag[data-type="Suggestion"] { background: #d6fbf1; }
+  .tag[data-type="Suggestion"]::before { background: #45f8cf; }
+
+  .item-date {
+    font-size: 12px;
+    color: #59736e;
+    white-space: nowrap;
+  }
+
+  .item-message {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px solid #f2f2f2;
+  }
+  /* Deux blocs fixes (gauche = statut, droite = actions reponses) pour que
+     "Répondre" reste toujours a l'extreme droite et que le compteur de
+     réponses garde toujours la meme position juste a sa gauche, present ou
+     non - plutot que de laisser justify-content:space-between reorganiser
+     les elements selon leur nombre. */
+  .item-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .item-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+  .replies-count-slot {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .statut-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .statut-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #59736e;
+  }
+  .statut-readonly {
+    font-size: 12px;
+    color: #59736e;
+  }
+  .statut-readonly strong {
+    color: #090c0b;
+  }
+  .statut-select {
+    padding: 6px 10px;
+    background: #f2f2f2;
+    border: 1.5px solid #090c0b;
+    border-radius: 8px;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .statut-select:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .statut-select[data-value="Nouveau"] { background: #fdfbce; }
+  .statut-select[data-value="Vu"] { background: #f2f2f2; }
+  .statut-select[data-value="Traité"] { background: #d6fbf1; }
+
+  .save-hint {
+    font-size: 11px;
+    color: #068428;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .save-hint.visible { opacity: 1; }
+
+  /* ==========================
+     FIL DE REPONSES
+     ========================== */
+  .replies-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #090c0b;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .replies-toggle:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+
+  /* Bouton "Répondre" : action a part entiere (ouvre le formulaire), donc
+     traite comme un vrai bouton plutot que comme un simple lien texte -
+     contrairement au compteur "N réponses" (.replies-list-toggle) qui reste
+     un texte souligné puisqu'il ne fait que révéler une info déjà là. */
+  .reply-form-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: #45f8cf;
+    border: 1.5px solid #090c0b;
+    border-radius: 100px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.15s ease;
+  }
+  .reply-form-btn:hover { transform: translateY(-1px); }
+  .reply-form-btn:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .reply-form-btn[aria-expanded="true"] { background: #f2f2f2; }
+
+  .replies-panel {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f2f2f2;
+  }
+  .replies-panel[hidden] { display: none; }
+
+  .reply {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #f2f2f2;
+    border-radius: 10px;
+  }
+  .reply-meta {
+    margin: 0 0 4px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #59736e;
+  }
+  .reply-message {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  .reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .reply-form textarea {
+    min-height: 64px;
+    font-size: 13px;
+  }
+
+  /* Formulaire d'edition d'un feedback (son auteur, tant que Nouveau) et
+     d'une reponse (son auteur) : reprend les memes briques que reply-form. */
+  .feedback-edit-form textarea,
+  .reponse-edit-form textarea {
+    width: 100%;
+    min-height: 90px;
+    font-size: 13.5px;
+  }
+
+  /* Actions "Modifier" / "Supprimer" sur son propre feedback ou sa propre
+     reponse : petits boutons pilule avec icone, distincts du simple texte
+     souligné (.replies-toggle) utilisé pour les actions de consultation
+     (afficher/masquer les réponses). Modifier reste dans la palette neutre
+     de la marque ; Supprimer est le seul endroit du projet où le rouge est
+     utilisé, en exception déclarée : jamais en texte seul (RGAA), toujours
+     en bordure + fond clair, avec le mot "Supprimer" explicite à côté de
+     l'icône plutôt qu'une icône seule. */
+  .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+  }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px 5px 10px;
+    background: #ffffff;
+    border: 1.5px solid #090c0b;
+    border-radius: 100px;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #090c0b;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.15s ease;
+  }
+  .action-btn:hover {
+    transform: translateY(-1px);
+    background: #f2f2f2;
+  }
+  .action-btn:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .action-btn svg {
+    width: 13px;
+    height: 13px;
+    flex: none;
+  }
+  .action-btn.action-danger {
+    background: #fdeeea;
+    border-color: #c62828;
+  }
+  .action-btn.action-danger:hover {
+    background: #fbdcd3;
+  }
+  .action-btn.action-danger svg {
+    color: #c62828;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .action-btn { transition: none; }
+    .action-btn:hover { transform: none; }
+  }
+  .reply-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .reply-submit {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background: #45f8cf;
+    border: 1.5px solid #090c0b;
+    border-radius: 8px;
+    color: #090c0b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .reply-submit:hover { filter: brightness(0.95); }
+  .reply-submit:focus-visible {
+    outline: 3px solid #090c0b;
+    outline-offset: 2px;
+  }
+  .reply-submit:disabled { cursor: not-allowed; opacity: 0.6; }
+  .reply-status {
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+  .reply-status[data-state="ok"] { color: #068428; }
+  .reply-status[data-state="error"] { color: #b3261e; }
+
+  /* ==========================
+     RESPONSIVE
+     ========================== */
+  @media (max-width: 600px) {
+    body { padding: 16px; }
+    .form-body { padding: 0 16px; }
+    .form-summary { padding: 16px; }
+    .filterbar { flex-direction: column; }
+    .reset-btn { align-self: stretch; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .submit-wrap { width: 100%; }
+    .submit-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-title-row">
+      <img class="brand-logo" src="logo.webp" alt="au carré" width="70" height="34">
+      <div>
+        <h1>Retours &amp; suggestions</h1>
+        <p>Bugs et suggestions — dépose ou consulte les retours de toute l'équipe, directement ici.</p>
+      </div>
+    </div>
+    <span class="count-pill" id="count-pill">0 retour</span>
+  </div>
+
+  <div class="setup-note" id="setup-note" hidden></div>
+
+  <details class="form-details" id="form-details">
+    <summary class="form-summary">
+      <span class="form-summary-label">➕ Nouveau feedback</span>
+      <span class="form-summary-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="form-body">
+      <form id="feedback-form" novalidate>
+        <div class="field">
+          <fieldset>
+            <legend>Type de retour <span class="required-hint">(obligatoire)</span></legend>
+            <div class="type-options" role="radiogroup" aria-required="true">
+              <div class="type-option">
+                <input type="radio" name="type" id="type-bug" value="Bug" />
+                <label for="type-bug">🐛 Bug</label>
+              </div>
+              <div class="type-option">
+                <input type="radio" name="type" id="type-suggestion" value="Suggestion" checked />
+                <label for="type-suggestion">💡 Suggestion</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="field">
+          <label for="message">Ton message <span class="required-hint">(obligatoire)</span></label>
+          <textarea id="message" required aria-required="true" placeholder="Décris le bug, l'idée ou ton avis en quelques phrases..."></textarea>
+        </div>
+
+        <div class="actions">
+          <div class="submit-wrap">
+            <button type="submit" class="submit-btn" id="submit-btn">Envoyer le retour</button>
+            <div class="submit-shadow" aria-hidden="true"></div>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </details>
+
+  <div class="filterbar">
+    <div class="filter-group">
+      <label for="f-type">Type</label>
+      <select id="f-type">
+        <option value="">Tous</option>
+        <option value="Bug">Bug</option>
+        <option value="Suggestion">Suggestion</option>
+      </select>
+    </div>
+    <div class="filter-group filter-search">
+      <label for="f-search">Recherche dans le message</label>
+      <input type="search" id="f-search" placeholder="Mot-clé..." />
+    </div>
+    <button type="button" class="reset-btn" id="f-reset">Réinitialiser</button>
+  </div>
+
+  <details class="status-group" data-statut="Nouveau" open>
+    <summary class="status-summary">
+      <span class="status-summary-label">
+        <span class="status-dot" data-statut="Nouveau"></span>
+        Nouveau
+      </span>
+      <span class="status-summary-right">
+        <span class="status-count" id="count-nouveau">0</span>
+        <span class="status-chevron" aria-hidden="true">▾</span>
+      </span>
+    </summary>
+    <div class="status-body" id="list-nouveau"></div>
+  </details>
+
+  <details class="status-group" data-statut="Vu" open>
+    <summary class="status-summary">
+      <span class="status-summary-label">
+        <span class="status-dot" data-statut="Vu"></span>
+        Vu
+      </span>
+      <span class="status-summary-right">
+        <span class="status-count" id="count-vu">0</span>
+        <span class="status-chevron" aria-hidden="true">▾</span>
+      </span>
+    </summary>
+    <div class="status-body" id="list-vu"></div>
+  </details>
+
+  <details class="status-group" data-statut="Traité">
+    <summary class="status-summary">
+      <span class="status-summary-label">
+        <span class="status-dot" data-statut="Traité"></span>
+        Traité
+      </span>
+      <span class="status-summary-right">
+        <span class="status-count" id="count-traite">0</span>
+        <span class="status-chevron" aria-hidden="true">▾</span>
+      </span>
+    </summary>
+    <div class="status-body" id="list-traite"></div>
+  </details>
+</div>
+
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<script src="widget.js"></script>
+</body>
+</html>
